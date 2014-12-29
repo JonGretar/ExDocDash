@@ -1,0 +1,2 @@
+defmodule ExDocDash do
+end

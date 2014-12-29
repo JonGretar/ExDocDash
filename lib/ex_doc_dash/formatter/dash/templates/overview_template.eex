@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Overview</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/material-wfont.min.css" rel="stylesheet">
+	<link href="css/custom.css" rel="stylesheet">
+</head>
+<body>
+	<div class="navbar navbar-default">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="overview.html">Overview</a>
+		</div>
+		<div class="navbar-collapse collapse navbar-responsive-collapse">
+			<ul class="nav navbar-nav navbar-right">
+				<a class="navbar-brand" href="overview.html"><%=h config.project %> v<%=h config.version %></a>
+			</ul>
+		</div>
+	</div>
+
+
+	<%= unless Enum.empty?(modules) do %>
+	<h2 id="modules_summary">Modules</h2>
+	<div class="list-group">
+		<%= for node <- modules, do: overview_entry_template(node, "Module") %>
+	</div>
+	<% end %>
+
+	<%= unless Enum.empty?(exceptions) do %>
+	<h2 id="exceptions_summary">Exceptions</h2>
+	<div class="list-group">
+		<%= for node <- exceptions, do: overview_entry_template(node, "Exception") %>
+	</div>
+	<% end %>
+
+	<%= unless Enum.empty?(protocols) do %>
+	<h2 id="protocols_summary">Protocols</h2>
+	<div class="list-group">
+		<%= for node <- protocols, do: overview_entry_template(node, "Protocol") %>
+	</div>
+	<% end %>
+
+
+	</div>
+</body>
+</html>

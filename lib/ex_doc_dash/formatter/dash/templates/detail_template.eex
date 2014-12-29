@@ -1,0 +1,18 @@
+<a name="//apple_ref/cpp/<%=h_link node_type(node.type) %>/<%=h_link node.signature %>" class="dashAnchor"></a>
+
+<div class="panel <%= panel_type(node.type) %>" id="<%=h link_id(node) %>">
+	<div class="panel-heading">
+		<%= if node.source do %><a href="<%= node.source %>" class="btn btn-fab btn-raised btn-primary btn-fab-mini source-link" name="Source"><i class="mdi-editor-attach-file"></i></a><% end %>
+		<span class="pull-right"><%= pretty_type(node) %></span><h3 class="panel-title"><%=h node.signature %></h3>
+	</div>
+	<div class="panel-body">
+		<%= if specs = get_specs(node) do %>
+			<p>Specs:</p><ul>
+			<%= for spec <- specs do %>
+				<li><code><%= spec %></code></li>
+			<% end %>
+			</ul>
+		<% end %>
+		<%= to_html(node.doc) %>
+	</div>
+</div>
