@@ -29,7 +29,7 @@ defmodule ExDocDash.Mixfile do
 
 	defp description do
 		"""
-		Dash.app formatter for ex_doc.
+		Formatter for ExDoc to generate docset documentation for use in Dash.app.
 		"""
 	end
 
