@@ -21,7 +21,7 @@ defmodule ExDocDash.Mixfile do
 
 	defp deps do
 		[
-			{:sqlite3, github: "sergey-miryanov/erlang-sqlite3"},
+			{:sqlite3, ">= 1.0.1", github: "sergey-miryanov/erlang-sqlite3"},
 			{:ex_doc, ">= 0.6.1"},
 			{:earmark, ">= 0.1.0"}
 		]
