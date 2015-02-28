@@ -28,7 +28,7 @@ Check out ExDocDash and install as a global dependency
 
     git clone https://github.com/JonGretar/ExDocDash.git
     cd ExDocDash
-    mix do archive.build, archive.install
+    mix do deps.get, archive.build, archive.install
 
 Now you should have the `docs.dash` mix task available in all projects.
 
