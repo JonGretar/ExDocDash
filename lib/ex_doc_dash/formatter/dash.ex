@@ -5,6 +5,7 @@ defmodule ExDocDash.Formatter.Dash do
 
 	alias ExDocDash.Formatter.Dash.Templates
 	alias ExDoc.Formatter.HTML.Autolink
+	alias ExDocDash.SQLite
 
 	@doc """
 	Generate Dash.app documentation for the given modules
@@ -32,7 +33,6 @@ defmodule ExDocDash.Formatter.Dash do
 
 		content = Templates.info_plist(config, has_readme)
 		:ok = File.write("#{output}/../../Info.plist", content)
-		# :sqlite3.close(:index)
 
 		config.formatter_opts[:docset_root]
 	end
@@ -54,15 +54,8 @@ defmodule ExDocDash.Formatter.Dash do
 	end
 
 	defp create_index_database(database) do
-		{:ok, pid} = :sqlite3.open(:index, [file: to_char_list(database)])
-		:sqlite3.create_table(:index, "searchIndex", [
-			{:id, :integer, [:primary_key, :unique]},
-			name: :text,
-			type: :text,
-			path: :text
-		])
-		:sqlite3.sql_exec(:index, "CREATE UNIQUE INDEX anchor ON searchIndex (name, type, path);")
-		{:ok, pid}
+		{:ok, _} = SQLite.exec(database, "CREATE TABLE searchIndex(id INTEGER PRIMARY KEY, name TEXT, type TEXT, path TEXT);")
+		{:ok, _} = SQLite.exec(database, "CREATE UNIQUE INDEX anchor ON searchIndex (name, type, path);")
 	end
 
 	defp generate_overview(modules, exceptions, protocols, output, config) do
@@ -158,37 +151,31 @@ defmodule ExDocDash.Formatter.Dash do
 		File.write("#{output}/#{scope}_list.html", content)
 	end
 
-	defp index_list(%ExDoc.FunctionNode{}=node, module) do
+	defp index_list(%ExDoc.FunctionNode{}=node, module, config) do
 		type = case node.type do
 			:def -> "Function"
 			:defmacro -> "Macro"
 			:defcallback -> "Callback"
 			_ -> "Record"
 		end
-		:sqlite3.write(:index, "searchIndex", [
-			name: module<>"."<>node.id,
-			type: type,
-			path: module<>".html#"<>node.id
-		])
+		database = config.formatter_opts[:docset_sqlitepath]
+		query = "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('#{module<>"."<>node.id}', '#{type}', '#{module<>".html#"<>node.id}');"
+		{:ok, _} = SQLite.exec(database, query)
 		# IO.puts "    * FunctionNode: #{inspect node.id}"
 	end
-	defp index_list(%ExDoc.TypeNode{}=node, module) do
-		:sqlite3.write(:index, "searchIndex", [
-			name: module<>"."<>node.id,
-			type: "Type",
-			path: module<>".html#"<>node.id
-			])
-			# IO.puts "    * TypeNode: #{inspect node.id}"
+	defp index_list(%ExDoc.TypeNode{}=node, module, config) do
+		database = config.formatter_opts[:docset_sqlitepath]
+		query = "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('#{module<>"."<>node.id}', 'Type', '#{module<>".html#"<>node.id}');"
+		{:ok, _} = SQLite.exec(database, query)
+		# IO.puts "    * TypeNode: #{inspect node.id}"
 		end
-	defp index_list(node, _modules, _output, _config) do
-		:sqlite3.write(:index, "searchIndex", [
-			name: node.id,
-			type: "Module",
-			path: node.id<>".html"
-		])
+	defp index_list(node, _modules, _output, config) do
+		database = config.formatter_opts[:docset_sqlitepath]
+		query = "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('#{node.id}', 'Module', '#{node.id<>".html"}');"
+		{:ok, _} = SQLite.exec(database, query)
 		# IO.puts "  * Node: #{inspect node.id}"
-		Enum.each node.docs, &index_list(&1, node.id)
-		Enum.each node.typespecs, &index_list(&1, node.id)
+		Enum.each node.docs, &index_list(&1, node.id, config)
+		Enum.each node.typespecs, &index_list(&1, node.id, config)
 	end
 
 	defp generate_module_page(node, modules, output, config) do

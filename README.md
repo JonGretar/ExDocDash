@@ -6,10 +6,11 @@ Template Design is generated using Fez Vrasta's [Bootstap Material Design]( http
 
 ## Installation & Usage
 
-Open up your `mix.exs` and add the following to your deps. *For reasons I have not yet found out mix will sometimes not grab the sqlite3 dep from the project so you have to require it from the using library for now.*
+*Please note that you will need to have the `sqlite3` binary installed.*
 
-    {:sqlite3, ">= 1.0.1", github: "sergey-miryanov/erlang-sqlite3", only: :docs},
-    {:ex_doc_dash, "~> 0.1.0", only: :docs}
+Open up your `mix.exs` and add the following to your deps.
+
+    {:ex_doc_dash, "~> 0.2.0", only: :docs}
 
 Build your dependencies
 

@@ -1,4 +1,2 @@
-%{"earmark": {:hex, :earmark, "0.1.12"},
-  "ex_doc": {:hex, :ex_doc, "0.6.2"},
-  "reprise": {:hex, :reprise, "0.3.0"},
-  "sqlite3": {:git, "git://github.com/sergey-miryanov/erlang-sqlite3.git", "8970c0ff5d7b08d9b51d34b0a22b6d2c1e332d05", []}}
+%{"earmark": {:hex, :earmark, "0.1.13"},
+  "ex_doc": {:hex, :ex_doc, "0.7.1"}}
