@@ -8,6 +8,8 @@ Template Design is generated using Fez Vrasta's [Bootstap Material Design]( http
 
 *Please note that you will need to have the `sqlite3` binary installed.*
 
+### As a dependency for your project
+
 Open up your `mix.exs` and add the following to your deps.
 
     {:ex_doc_dash, "~> 0.2.0", only: :docs}
@@ -19,6 +21,18 @@ Build your dependencies
 Now you can build your Dash.app documentation using the `docs.dash` task and it will be save in `./docs`.
 
     MIX_ENV=docs mix docs.dash
+
+### As a global archive
+
+Check out ExDocDash and install as a global dependency
+
+    git clone https://github.com/JonGretar/ExDocDash.git
+    cd ExDocDash
+    mix do archive.build, archive.install
+
+Now you should have the `docs.dash` mix task available in all projects.
+
+**Note that these projects will have to have `ex_doc` and `earmark` as it's dependency as it's not globally installed.**
 
 ## Example of generating [Phoenix](https://github.com/phoenixframework/phoenix) Documentation
 
