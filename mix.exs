@@ -4,7 +4,7 @@ defmodule ExDocDash.Mixfile do
 	def project do
 		[
 			app: :ex_doc_dash,
-			version: "0.1.1",
+			version: "0.2.0",
 			elixir: "~> 1.0",
 			deps: deps,
 			description: description,
