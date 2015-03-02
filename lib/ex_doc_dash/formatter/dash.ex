@@ -14,7 +14,7 @@ defmodule ExDocDash.Formatter.Dash do
 		config = make_docset(config)
 		output = config.output
 
-		{:ok, _pid} = create_index_database(config.formatter_opts[:docset_sqlitepath])
+		SQLite.create_index(config)
 
 		generate_assets(output, config)
 		generate_icon(config)
@@ -51,11 +51,6 @@ defmodule ExDocDash.Formatter.Dash do
 			docset_sqlitepath: docset_sqlitepath
 		]
 		Map.merge(config, %{output: docset_docpath, formatter_opts: formatter_opts})
-	end
-
-	defp create_index_database(database) do
-		{:ok, _} = SQLite.exec(database, "CREATE TABLE searchIndex(id INTEGER PRIMARY KEY, name TEXT, type TEXT, path TEXT);")
-		{:ok, _} = SQLite.exec(database, "CREATE UNIQUE INDEX anchor ON searchIndex (name, type, path);")
 	end
 
 	defp generate_overview(modules, exceptions, protocols, output, config) do
@@ -158,25 +153,17 @@ defmodule ExDocDash.Formatter.Dash do
 			:defcallback -> "Callback"
 			_ -> "Record"
 		end
-		database = config.formatter_opts[:docset_sqlitepath]
-		query = "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('#{module<>"."<>node.id}', '#{type}', '#{module<>".html#"<>node.id}');"
-		{:ok, _} = SQLite.exec(database, query)
+		config |> SQLite.index_item(module<>"."<>node.id, type, module<>".html#"<>node.id)
 	end
 	defp index_list(%ExDoc.TypeNode{}=node, module, config) do
-		database = config.formatter_opts[:docset_sqlitepath]
-		query = "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('#{module<>"."<>node.id}', 'Type', '#{module<>".html#"<>node.id}');"
-		{:ok, _} = SQLite.exec(database, query)
+		config |> SQLite.index_item(module<>"."<>node.id, "Type", module<>".html#"<>node.id)
 	end
 
 	defp index_list(%ExDoc.ModuleNode{type: :exception}=node, _modules, _output, config) do
-		database = config.formatter_opts[:docset_sqlitepath]
-		query = "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('#{node.id}', 'Exception', '#{node.id<>".html"}');"
-		{:ok, _} = SQLite.exec(database, query)
+		config |> SQLite.index_item(node.id, "Exception", node.id<>".html")
 	end
 	defp index_list(node, _modules, _output, config) do
-		database = config.formatter_opts[:docset_sqlitepath]
-		query = "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('#{node.id}', 'Module', '#{node.id<>".html"}');"
-		{:ok, _} = SQLite.exec(database, query)
+		config |> SQLite.index_item(node.id, "Module", node.id<>".html")
 		Enum.each node.docs, &index_list(&1, node.id, config)
 		Enum.each node.typespecs, &index_list(&1, node.id, config)
 	end
