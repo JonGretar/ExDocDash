@@ -12,10 +12,10 @@ defmodule ExDocDash.Formatter.Dash.Templates do
 	Generate content from the module template for a given `node`
 	"""
 	def module_page(node, config, _all) do
-		types			 = node.typespecs
-		functions	 = Enum.filter node.docs, &match?(%ExDoc.FunctionNode{type: :def}, &1)
-		macros			= Enum.filter node.docs, &match?(%ExDoc.FunctionNode{type: :defmacro}, &1)
-		callbacks	 = Enum.filter node.docs, &match?(%ExDoc.FunctionNode{type: :defcallback}, &1)
+		types      = node.typespecs
+		functions  = Enum.filter node.docs, &match?(%ExDoc.FunctionNode{type: :def}, &1)
+		macros     = Enum.filter node.docs, &match?(%ExDoc.FunctionNode{type: :defmacro}, &1)
+		callbacks  = Enum.filter node.docs, &match?(%ExDoc.FunctionNode{type: :defcallback}, &1)
 		module_template(config, node, types, functions, macros, callbacks)
 	end
 
@@ -40,10 +40,10 @@ defmodule ExDocDash.Formatter.Dash.Templates do
 	# Get the pretty name of a function node
 	defp pretty_type(%ExDoc.FunctionNode{type: t}) do
 		case t do
-			:def					-> "function"
-			:defmacro		 -> "macro"
-			:defcallback	-> "callback"
-			:type				 -> "type"
+			:def          -> "function"
+			:defmacro     -> "macro"
+			:defcallback  -> "callback"
+			:type         -> "type"
 		end
 	end
 
@@ -51,9 +51,9 @@ defmodule ExDocDash.Formatter.Dash.Templates do
 	defp link_id(node), do: link_id(node.id, node.type)
 	defp link_id(id, type) do
 		case type do
-			:defcallback	-> "c:#{id}"
-			:type				 -> "t:#{id}"
-			_						 -> "#{id}"
+			:defcallback -> "c:#{id}"
+			:type        -> "t:#{id}"
+			_            -> "#{id}"
 		end
 	end
 
@@ -105,7 +105,7 @@ defmodule ExDocDash.Formatter.Dash.Templates do
 	]
 
 	Enum.each templates, fn({ name, args }) ->
-		filename = Path.expand("templates/#{name}.eex", __DIR__)
+		filename = Path.expand("#{name}.eex", Application.app_dir(:ex_doc_dash, "priv/templates"))
 		EEx.function_from_file :def, name, filename, args
 	end
 end

@@ -65,8 +65,8 @@ defmodule ExDocDash.Formatter.Dash do
 
 	defp assets do
 		[
-			{ templates_path("css/*.css"), "css" },
-			{ templates_path("js/*.js"), "js" },
+			{ templates_path("stylesheets/*.css"), "stylesheets" },
+			{ templates_path("javascripts/*.js"), "javascripts" },
 			{ templates_path("fonts/*"), "fonts" }
 		]
 	end
@@ -161,19 +161,22 @@ defmodule ExDocDash.Formatter.Dash do
 		database = config.formatter_opts[:docset_sqlitepath]
 		query = "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('#{module<>"."<>node.id}', '#{type}', '#{module<>".html#"<>node.id}');"
 		{:ok, _} = SQLite.exec(database, query)
-		# IO.puts "    * FunctionNode: #{inspect node.id}"
 	end
 	defp index_list(%ExDoc.TypeNode{}=node, module, config) do
 		database = config.formatter_opts[:docset_sqlitepath]
 		query = "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('#{module<>"."<>node.id}', 'Type', '#{module<>".html#"<>node.id}');"
 		{:ok, _} = SQLite.exec(database, query)
-		# IO.puts "    * TypeNode: #{inspect node.id}"
-		end
+	end
+
+	defp index_list(%ExDoc.ModuleNode{type: :exception}=node, _modules, _output, config) do
+		database = config.formatter_opts[:docset_sqlitepath]
+		query = "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('#{node.id}', 'Exception', '#{node.id<>".html"}');"
+		{:ok, _} = SQLite.exec(database, query)
+	end
 	defp index_list(node, _modules, _output, config) do
 		database = config.formatter_opts[:docset_sqlitepath]
 		query = "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('#{node.id}', 'Module', '#{node.id<>".html"}');"
 		{:ok, _} = SQLite.exec(database, query)
-		# IO.puts "  * Node: #{inspect node.id}"
 		Enum.each node.docs, &index_list(&1, node.id, config)
 		Enum.each node.typespecs, &index_list(&1, node.id, config)
 	end
@@ -184,6 +187,6 @@ defmodule ExDocDash.Formatter.Dash do
 	end
 
 	defp templates_path(other) do
-		Path.expand("dash/templates/#{other}", __DIR__)
+		Path.expand(other, Application.app_dir(:ex_doc_dash, "priv/templates"))
 	end
 end

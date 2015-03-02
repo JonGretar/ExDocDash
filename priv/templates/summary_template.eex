@@ -1,5 +1,5 @@
 <tr>
-	<td><a href="#<%=h node.id %>"><%=h node.signature %></td>
+	<td><a href="#<%=h node.id %>"><%=h node.id %></td>
 	<td><%= if node.doc do %>
 	<%= to_html(synopsis(node.doc)) %>
 	<% end %>

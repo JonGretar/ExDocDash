@@ -1,0 +1,14 @@
+<a name="//apple_ref/cpp/<%=h_link node_type(node.type) %>/<%=h_link node.signature %>" class="dashAnchor"></a>
+<h3 id="<%=h link_id(node) %>"><%=h node.signature %></h3>
+<%= if specs = get_specs(node) do %>
+	<p>Specs:</p><ul>
+	<%= for spec <- specs do %>
+		<li><code class="elixir"><%= spec %></code></li>
+	<% end %>
+	</ul>
+<% end %>
+<%= to_html(node.doc) %>
+
+<%= if node.source do %>
+<aside class="source"><a href="<%= node.source %>" class="view_source">Source</a></aside>
+<% end %>

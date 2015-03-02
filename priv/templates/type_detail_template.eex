@@ -1,0 +1,5 @@
+<a name="//apple_ref/cpp/Type/<%= node.name %>" class="dashAnchor"></a>
+<h3 id="<%=h link_id(node)%>"><code><%= node.spec %></code></h3>
+<p><%= if node.doc do %>
+	<%= to_html(node.doc) %>
+<% end %></p>
