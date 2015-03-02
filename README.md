@@ -22,18 +22,6 @@ Now you can build your Dash.app documentation using the `docs.dash` task and it 
 
     MIX_ENV=docs mix docs.dash
 
-### As a global archive
-
-Check out ExDocDash and install as a global dependency
-
-    git clone https://github.com/JonGretar/ExDocDash.git
-    cd ExDocDash
-    mix do deps.get, archive.build, archive.install
-
-Now you should have the `docs.dash` mix task available in all projects.
-
-**Note that these projects will have to have `ex_doc` and `earmark` as it's dependency as it's not globally installed.**
-
 ## Example of generating [Phoenix](https://github.com/phoenixframework/phoenix) Documentation
 
 ![ExDocDash Phoenix docs](https://us-east.manta.joyent.com/JonGretar/public/ExDocDash-Phoenix-1.gif)
