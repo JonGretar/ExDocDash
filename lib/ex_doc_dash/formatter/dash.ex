@@ -36,7 +36,9 @@ defmodule ExDocDash.Formatter.Dash do
 		generate_list(:protocols, protocols, all, output, config, has_readme)
 
 		content = Templates.info_plist(config, has_readme)
-		:ok = File.write("#{output}/../../Info.plist", content)
+		path = "#{output}/../../Info.plist"
+		log(path)
+		:ok = File.write(path, content)
 
 		config.formatter_opts[:docset_root]
 	end
@@ -59,7 +61,9 @@ defmodule ExDocDash.Formatter.Dash do
 
 	defp generate_overview(modules, exceptions, protocols, output, config) do
 		content = Templates.overview_template(config, modules, exceptions, protocols)
-		:ok = File.write("#{output}/overview.html", content)
+		path = "#{output}/overview.html"
+		log(path)
+		:ok = File.write(path, content)
 	end
 
 	@assets Enum.map Util.assets, fn({ pattern, dir }) ->
@@ -95,6 +99,7 @@ defmodule ExDocDash.Formatter.Dash do
 		destination_path = Path.join(config.formatter_opts[:docset_root], "icon.tiff")
 		custom_icon_path = Path.join(config.source_root, "icon.tiff")
 		if File.exists?(custom_icon_path) do
+			log(custom_icon_path)
 			File.cp(custom_icon_path, destination_path)
 		else
 			create_file destination_path, default_icon_text()
@@ -112,7 +117,9 @@ defmodule ExDocDash.Formatter.Dash do
 	defp write_readme(output, {:ok, content}, modules, config) do
 		content = Autolink.project_doc(content, modules)
 		readme_html = Templates.readme_template(config, content) |> pretty_codeblocks
-		File.write("#{output}/README.html", readme_html)
+		path = "#{output}/README.html"
+		log(path)
+		File.write(path, readme_html)
 		true
 	end
 
@@ -158,7 +165,9 @@ defmodule ExDocDash.Formatter.Dash do
 		Enum.each nodes, &index_list(&1, all, output, config)
 		Enum.each nodes, &generate_module_page(&1, all, output, config)
 		content = Templates.list_page(scope, nodes, config, has_readme)
-		File.write("#{output}/#{scope}_list.html", content)
+		path = "#{output}/#{scope}_list.html"
+		log(path)
+		File.write(path, content)
 	end
 
 	defp index_list(%ExDoc.FunctionNode{}=node, module, config) do
@@ -185,10 +194,13 @@ defmodule ExDocDash.Formatter.Dash do
 
 	defp generate_module_page(node, modules, output, config) do
 		content = Templates.module_page(node, config, modules)
-		File.write("#{output}/#{node.id}.html", content)
+		path = "#{output}/#{node.id}.html"
+		log(path)
+		File.write(path, content)
 	end
 
-	defp templates_path(other) do
-		Path.expand(other, Application.app_dir(:ex_doc_dash, "priv/templates"))
+	defp log(path) do
+		cwd = File.cwd!
+		Mix.shell.info [:green, "* creating ", :reset, Path.relative_to(path, cwd)]
 	end
 end
