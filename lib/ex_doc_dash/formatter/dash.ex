@@ -3,9 +3,13 @@ defmodule ExDocDash.Formatter.Dash do
 	Provide Dash.app documentation.
 	"""
 
+	import Mix.Generator
+	require ExDocDash.Util
+
 	alias ExDocDash.Formatter.Dash.Templates
 	alias ExDoc.Formatter.HTML.Autolink
 	alias ExDocDash.SQLite
+	alias ExDocDash.Util
 
 	@doc """
 	Generate Dash.app documentation for the given modules
@@ -58,32 +62,43 @@ defmodule ExDocDash.Formatter.Dash do
 		:ok = File.write("#{output}/overview.html", content)
 	end
 
-	defp assets do
-		[
-			{ templates_path("stylesheets/*.css"), "stylesheets" },
-			{ templates_path("javascripts/*.js"), "javascripts" },
-			{ templates_path("fonts/*"), "fonts" }
-		]
+	@assets Enum.map Util.assets, fn({ pattern, dir }) ->
+		files = Enum.map Path.wildcard(pattern), fn(file) ->
+			base = Path.basename(file)
+			filename = String.replace(base, ~r/\.|-/, "_", global: true)
+
+			# embed assets
+			embed_text filename, from_file: file
+			file_func = "#{filename}_text" |> String.to_atom
+			Util.get_content(file_func)
+			base
+		end
+		{files, dir}
 	end
 
 	defp generate_assets(output, _config) do
-		Enum.each assets, fn({ pattern, dir }) ->
+		Enum.each @assets, fn({ files, dir }) ->
 			output = "#{output}/#{dir}"
 			File.mkdir output
 
-			Enum.map Path.wildcard(pattern), fn(file) ->
-				base = Path.basename(file)
-				File.copy file, "#{output}/#{base}"
+			Enum.map files, fn(file) ->
+				filename = String.replace(file, ~r/\.|-/, "_", global: true)
+				file_func = "#{filename}_text" |> String.to_atom
+				create_file "#{output}/#{file}", do_get_content(file_func)
 			end
 		end
 	end
 
+	embed_text :default_icon, from_file: Util.templates_path("icon.tiff")
+
 	defp generate_icon(config) do
 		destination_path = Path.join(config.formatter_opts[:docset_root], "icon.tiff")
 		custom_icon_path = Path.join(config.source_root, "icon.tiff")
-		template_icon_path = templates_path("icon.tiff")
-		copy_path = if File.exists?(custom_icon_path), do: custom_icon_path, else: template_icon_path
-		File.cp(copy_path, destination_path)
+		if File.exists?(custom_icon_path) do
+			File.cp(custom_icon_path, destination_path)
+		else
+			create_file destination_path, default_icon_text()
+		end
 	end
 
 	defp generate_readme(output, modules, config) do
