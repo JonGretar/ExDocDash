@@ -22,9 +22,6 @@
 
 
 			<h2 id="sub_list_header">
-				<%= if has_readme do %>
-					<a href="README.html">README</a> -
-				<% end %>
 				<a href="overview.html">Overview</a>
 			</h2>
 

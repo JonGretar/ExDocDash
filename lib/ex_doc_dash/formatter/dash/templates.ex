@@ -22,8 +22,8 @@ defmodule ExDocDash.Formatter.Dash.Templates do
 	@doc """
 	Generates the listing.
 	"""
-	def list_page(scope, nodes, config, has_readme) do
-		list_template(scope, nodes, config, has_readme)
+	def list_page(scope, nodes, config) do
+		list_template(scope, nodes, config)
 	end
 
 	# Get the full specs from a function, already in HTML form.
@@ -73,11 +73,11 @@ defmodule ExDocDash.Formatter.Dash.Templates do
 	end
 
 	templates = [
-		info_plist: [:config, :has_readme],
-		list_template: [:scope, :nodes, :config, :has_readme],
+		info_plist: [:config],
+		list_template: [:scope, :nodes, :config],
 		overview_template: [:config, :modules, :exceptions, :protocols],
 		module_template: [:config, :module, :types, :functions, :macros, :callbacks],
-		readme_template: [:config, :content],
+		extra_template: [:config, :content],
 		list_item_template: [:node],
 		overview_entry_template: [:node, :type],
 		summary_template: [:node],

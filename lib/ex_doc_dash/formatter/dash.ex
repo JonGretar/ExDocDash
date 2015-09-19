@@ -22,7 +22,6 @@ defmodule ExDocDash.Formatter.Dash do
 
 		generate_assets(output, config)
 		generate_icon(config)
-		has_readme = config.readme && generate_readme(output, modules, config)
 
 		all = Autolink.all(modules)
 
@@ -31,11 +30,13 @@ defmodule ExDocDash.Formatter.Dash do
 		protocols  = filter_list(:protocols, all)
 
 		generate_overview(modules, exceptions, protocols, output, config)
-		generate_list(:modules, modules, all, output, config, has_readme)
-		generate_list(:exceptions, exceptions, all, output, config, has_readme)
-		generate_list(:protocols, protocols, all, output, config, has_readme)
+		generate_list(:modules, modules, all, output, config)
+		generate_list(:exceptions, exceptions, all, output, config)
+		generate_list(:protocols, protocols, all, output, config)
 
-		content = Templates.info_plist(config, has_readme)
+		generate_extras(output, config, all)
+
+		content = Templates.info_plist(config)
 		"#{output}/../../Info.plist" |> log |> File.write(content)
 
 		config.formatter_opts[:docset_root]
@@ -101,23 +102,24 @@ defmodule ExDocDash.Formatter.Dash do
 		end
 	end
 
-	defp generate_readme(output, modules, config) do
-		readme_path = Path.expand(readme_path(config, config.readme))
-		write_readme(output, File.read(readme_path), modules, config)
+	defp generate_extras(output, config, modules) do
+		generate_extras(output, config, modules, config.extras || [])
 	end
 
-	defp readme_path(config, true), do: Path.join(config.source_root, "README.md")
-	defp readme_path(config, path), do: Path.join(config.source_root, path)
+	defp generate_extras(_output, _config, _modules, []), do: :ok
+	defp generate_extras(output, config, modules, [file|rest]) do
+		extra_path = Path.join(config.source_root, file)
+		output_file = "#{Path.rootname(Path.basename(file))}.html"
+		write_extra(Path.join(output, output_file), File.read(extra_path), modules, config)
+		config |> SQLite.index_item(Path.basename(output_file, ".html"), "Guide", output_file)
+		generate_extras(output, config, modules, rest)
+	end
 
-	defp write_readme(output, {:ok, content}, modules, config) do
+	defp write_extra(output_file, {:ok, content}, modules, config) do
 		content = Autolink.project_doc(content, modules)
-		readme_html = Templates.readme_template(config, content) |> pretty_codeblocks
-		"#{output}/README.html" |> log |> File.write(readme_html)
+		extra_html = Templates.extra_template(config, content) |> pretty_codeblocks
+		output_file |> log |> File.write(extra_html)
 		true
-	end
-
-	defp write_readme(_, _, _, _) do
-		false
 	end
 
 	@doc false
@@ -154,10 +156,10 @@ defmodule ExDocDash.Formatter.Dash do
 		Enum.filter nodes, &match?(%ExDoc.ModuleNode{type: x} when x in [:macro], &1)
 	end
 
-	defp generate_list(scope, nodes, all, output, config, has_readme) do
+	defp generate_list(scope, nodes, all, output, config) do
 		Enum.each nodes, &index_list(&1, all, output, config)
 		Enum.each nodes, &generate_module_page(&1, all, output, config)
-		content = Templates.list_page(scope, nodes, config, has_readme)
+		content = Templates.list_page(scope, nodes, config)
 		"#{output}/#{scope}_list.html" |> log |> File.write(content)
 	end
 

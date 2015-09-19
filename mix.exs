@@ -4,12 +4,13 @@ defmodule ExDocDash.Mixfile do
 	def project do
 		[
 			app: :ex_doc_dash,
-			version: "0.2.2",
+			version: "0.3.0",
 			elixir: "~> 1.0",
 			deps: deps,
 			description: description,
 			package: package,
 			name: "ExDocDash",
+			docs: [extras: ["README.md"]],
 			source_url: "https://github.com/JonGretar/ExDocDash",
 			homepage_url: "http://hexdocs.pm/ex_doc_dash"
 		]
@@ -21,8 +22,8 @@ defmodule ExDocDash.Mixfile do
 
 	defp deps do
 		[
-			{:ex_doc, "> 0.6.1"},
-			{:earmark, ">= 0.1.0"}
+			{:ex_doc, ">= 0.9.0"},
+			{:earmark, "~> 0.1.17 or ~> 0.2"}
 		]
 	end
 

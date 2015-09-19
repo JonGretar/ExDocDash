@@ -7,7 +7,7 @@
 	<key>DocSetPlatformFamily</key> <string><%= config.project %></string>
 	<key>isDashDocset</key> <true/>
 	<key>isJavaScriptEnabled</key> <true/>
-	<key>dashIndexFilePath</key> <string><%= if has_readme, do: "README.html", else: "overview.html" %></string>
+	<key>dashIndexFilePath</key> <string>overview.html</string>
 	<key>DashDocSetFamily</key> <string>dashtoc</string>
 </dict>
 </plist>
