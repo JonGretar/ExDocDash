@@ -37,16 +37,6 @@ defmodule ExDocDash.Formatter.Dash.Templates do
 	defp to_html(nil), do: nil
 	defp to_html(bin) when is_binary(bin), do: ExDoc.Markdown.to_html(bin)
 
-	# Get the pretty name of a function node
-	defp pretty_type(%ExDoc.FunctionNode{type: t}) do
-		case t do
-			:def          -> "function"
-			:defmacro     -> "macro"
-			:defcallback  -> "callback"
-			:type         -> "type"
-		end
-	end
-
 	# Generate a link id
 	defp link_id(node), do: link_id(node.id, node.type)
 	defp link_id(id, type) do
@@ -63,15 +53,6 @@ defmodule ExDocDash.Formatter.Dash.Templates do
 	defp node_type(:type), do: "Type"
 	defp node_type(_), do: "Unknown"
 
-	defp panel_type(:def), do: "panel-success"
-	defp panel_type(:defcallback), do: "panel-warning"
-	defp panel_type(:defmacro), do: "panel-danger"
-	defp panel_type(_), do: "panel-primary"
-
-	defp overview_icon("Module"), do: "mdi-action-view-quilt"
-	defp overview_icon("Exception"), do: "mdi-alert-warning"
-	defp overview_icon("Protocol"), do: "mdi-action-extension"
-	defp overview_icon(_), do: "mdi-action-help"
 
 	# Get the first paragraph of the documentation of a node, if any.
 	defp synopsis(nil), do: nil
