@@ -22,8 +22,7 @@ defmodule ExDocDash.Mixfile do
 
 	defp deps do
 		[
-			{:ex_doc, ">= 0.9.0"},
-			{:earmark, "~> 0.1.17 or ~> 0.2"}
+			{:ex_doc, ">= 0.12.0"}
 		]
 	end
 
