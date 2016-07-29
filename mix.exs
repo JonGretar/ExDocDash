@@ -34,7 +34,7 @@ defmodule ExDocDash.Mixfile do
 
 	defp package do
 		[
-			contributors: ["Jón Grétar Borgþórsson"],
+			maintainers: ["Jón Grétar Borgþórsson"],
 			licenses: ["MIT"],
 			links: %{
 				"Dash.app": "http://kapeli.com/dash",
