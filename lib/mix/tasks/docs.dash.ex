@@ -23,17 +23,19 @@ defmodule Mix.Tasks.Docs.Dash do
 		options = Keyword.merge(get_docs_opts(config), cli_opts)
 		options = Dict.put(options, :formatter, ExDocDash.Formatter.Dash)
 
-		if source_url = config[:source_url] do
-			options = Keyword.put(options, :source_url, source_url)
+		options = if source_url = config[:source_url] do
+			Keyword.put(options, :source_url, source_url)
+		else
+			options
 		end
 
-		cond do
+		options = cond do
 			is_nil(options[:main]) ->
 				# Try generating main module's name from the app name
-				options = Keyword.put(options, :main, (config[:app] |> Atom.to_string |> Mix.Utils.camelize))
+				 Keyword.put(options, :main, (config[:app] |> Atom.to_string |> Mix.Utils.camelize))
 
 			is_atom(options[:main]) ->
-				options = Keyword.update!(options, :main, &inspect/1)
+				Keyword.update!(options, :main, &inspect/1)
 
 			is_binary(options[:main]) ->
 				options
